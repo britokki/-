@@ -11,14 +11,19 @@ type Event interface {
 	fmt.Stringer
 	// GetCompletedTurns should return the number of fully completed turns.
 	// If the 0th turn is finished, this should return 1.
-	GetCompletedTurns() int
+
+	// 이 인터페이스는 스트링을 반환하는 하나의 메소드가 있다 (Stringer) -> 따라서 밑에 있는 Any 타입들을 지원하는 스트링 메소드를
+	// 구현해야 함
+
+	GetCompletedTurns() int // 얘를 구현해야 함!
+
 }
 
 // AliveCellsCount is an Event notifying the user about the number of currently alive cells.
 // This Event should be sent every 2s.
 type AliveCellsCount struct { // implements Event
 	CompletedTurns int
-	CellsCount     int
+	CellsCount     int // 얘네 타입 지원하는 스트링 메소드
 }
 
 // ImageOutputComplete is an Event notifying the user about the completion of output.
@@ -64,7 +69,7 @@ type TurnComplete struct { // implements Event
 // SDL closes the window when this Event is sent.
 type FinalTurnComplete struct {
 	CompletedTurns int
-	Alive          []util.Cell
+	Alive          []util.Cell // alive cells! , X,Y 좌표 포함 하고 있음! , Cell 눌러서 읽는걸 추천(시온피셜
 }
 
 // String methods allow the different types of Events and States to be printed.
@@ -107,7 +112,7 @@ func (event ImageOutputComplete) GetCompletedTurns() int {
 }
 
 func (event CellFlipped) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("CellFlipped%v", event.Cell) // 확인 요망
 }
 
 func (event CellFlipped) GetCompletedTurns() int {
@@ -115,19 +120,29 @@ func (event CellFlipped) GetCompletedTurns() int {
 }
 
 func (event TurnComplete) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("Turncmpleated%v", event.CompletedTurns) //확인 요망
 }
 
 func (event TurnComplete) GetCompletedTurns() int {
 	return event.CompletedTurns
 }
 
+// Stringer allows each event to be printed by the GUI
+
+// GetCompletedTurns should return the number of fully completed turns.
+// If the 0th turn is finished, this should return 1.
+
+// 이 인터페이스는 스트링을 반환하는 하나의 메소드가 있다 (Stringer) -> 따라서 밑에 있는 Any 타입들을 지원하는 스트링 메소드를
+// 구현해야 함
 func (event FinalTurnComplete) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("FinalTurnCompleted %v", event.CompletedTurns)
+	//이 Event가  distributor에서 testgol 로 전송되어야 함.
+	// 확인 요망
 }
 
 func (event FinalTurnComplete) GetCompletedTurns() int {
-	return event.CompletedTurns
+	return event.CompletedTurns //확인 요망(건드린건 없음)
+
 }
 
 // This might all seem like weird syntax to you...
@@ -153,7 +168,7 @@ func (event FinalTurnComplete) GetCompletedTurns() int {
 */
 
 // Now in the Go code extension methods are created for the ImageOutputComplete so that it
-// provides the methods required for the Event Inteface. Similarly in Haskell, an instance
+// provides the methods required for the Event Inteface. Similarly, in Haskell, an instance
 // of the typeclass Event can be created.
 
 /*

@@ -7,7 +7,7 @@ import (
 )
 
 func Run(p gol.Params, events <-chan gol.Event, keyPresses chan<- rune) {
-	w := NewWindow(int32(p.ImageWidth), int32(p.ImageHeight))
+	w := NewWindow(int32(p.ImageWidth), int32(p.ImageHeight)) // w = Window , which is being displayed!
 
 sdlLoop:
 	for {
@@ -38,7 +38,7 @@ sdlLoop:
 				w.FlipPixel(e.Cell.X, e.Cell.Y)
 			case gol.TurnComplete:
 				w.RenderFrame()
-			case gol.FinalTurnComplete:
+			case gol.FinalTurnComplete: //마지막 턴 성공 -> 윈도우 박살
 				w.Destroy()
 				break sdlLoop
 			default:

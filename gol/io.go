@@ -10,9 +10,8 @@ import (
 )
 
 type ioChannels struct {
-	command <-chan ioCommand
-	idle    chan<- bool
-
+	command  <-chan ioCommand
+	idle     chan<- bool
 	filename <-chan string
 	output   <-chan uint8
 	input    chan<- uint8
@@ -67,9 +66,9 @@ func (io *ioState) writePgmImage() {
 	for y := 0; y < io.params.ImageHeight; y++ {
 		for x := 0; x < io.params.ImageWidth; x++ {
 			val := <-io.channels.output // 중요, 그리고 작성하고 싶던 그 이미지를 바이트바이바이트로 이 채널로 보냄, 그리고 배열에 put,
-			//if val != 0 {
-			//	fmt.Println(x, y)
-			//}
+			if val != 0 {
+				fmt.Println(x, y)
+			}
 			world[y][x] = val
 		}
 	}
@@ -93,7 +92,8 @@ func (io *ioState) readPgmImage() {
 	// Request a filename from the distributor.
 	filename := <-io.channels.filename // 밑에서 한거를 appropriate 한 이 채널로 다운 받고
 
-	data, ioError := ioutil.ReadFile("images/" + filename + ".pgm") // 파일 이름 저장 하는법, +filename 으로 파일 이름 보내고,
+	data, ioError := ioutil.ReadFile("images/" + filename + ".pgm")
+	// 파일 이름 저장 하는법, +filename 으로 파일 이름 보내고,
 	// 윗 줄에서 채널로 받은 후, 옳은 경로로 파일 지정,파일 네임,.pgm 작성.
 
 	util.Check(ioError)
